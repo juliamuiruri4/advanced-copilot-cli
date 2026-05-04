@@ -91,8 +91,8 @@ Next, you'll learn to **drive** the agent — plan-first prompting, diff review,
 | [← Previous: Getting started with Copilot CLI][previous-lesson] | [Next: Prompt engineering and CLI session control →][next-lesson] |
 |:--|--:|
 
-[previous-lesson]: ../01-getting-started-with-copilot-cli/README.md
-[next-lesson]: ../03-prompt-engineering-and-iteration/README.md
+[previous-lesson]: ./01-getting-started-with-copilot-cli.md
+[next-lesson]: ./03-prompt-engineering-and-iteration.md
 [copilot-cli-docs]: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli
 [copilot-instructions]: https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions
 [agents-md]: https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions

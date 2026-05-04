@@ -70,7 +70,7 @@ Next, [start a real conversation with the codebase][next-lesson].
 |  | [Next: Getting started with Copilot CLI →][next-lesson] |
 |:--|--:|
 
-[next-lesson]: ../01-getting-started-with-copilot-cli/README.md
+[next-lesson]: ./01-getting-started-with-copilot-cli.md
 [legacy-app]: https://github.com/geektrainer/legacy-app
 [copilot-cli-docs]: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli
 [copilot-cli-repo]: https://github.com/github/copilot-cli

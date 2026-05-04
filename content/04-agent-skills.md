@@ -90,12 +90,12 @@ Next, you'll level up from skills to **custom agents** that compose skills, inst
 | [← Previous: Prompt engineering and CLI session control][previous-lesson] | [Next: Custom agents →][next-lesson] |
 |:--|--:|
 
-[previous-lesson]: ../03-prompt-engineering-and-iteration/README.md
-[next-lesson]: ../05-custom-agents/README.md
-[s02]: ../02-instructions-files/README.md
-[s03]: ../03-prompt-engineering-and-iteration/README.md
-[s05]: ../05-custom-agents/README.md
-[s07]: ../07-real-world-workflow/README.md
+[previous-lesson]: ./03-prompt-engineering-and-iteration.md
+[next-lesson]: ./05-custom-agents.md
+[s02]: ./02-instructions-files.md
+[s03]: ./03-prompt-engineering-and-iteration.md
+[s05]: ./05-custom-agents.md
+[s07]: ./07-real-world-workflow.md
 [copilot-cli-docs]: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli
 [copilot-skills]: https://docs.github.com/en/copilot
 [owasp-sqli]: https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html

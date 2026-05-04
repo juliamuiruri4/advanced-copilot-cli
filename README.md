@@ -34,7 +34,7 @@ Across the nine sections of this course you will:
 
 ## Course structure
 
-Each section is a folder under [`content/`](./content/) with its own `README.md`. Sections build on each other but each section's exercises include a starting-state note so you can drop in if you need to.
+Each section is a single markdown file under [`content/`](./content/). Sections build on each other but each section's exercises include a starting-state note so you can drop in if you need to.
 
 1. [Prerequisites and environment setup][s00]
 2. [Getting started with Copilot CLI][s01]
@@ -55,12 +55,12 @@ Head to [Section 0: Prerequisites and environment setup][s00] to get your enviro
 This repository contains the **skeleton** for the course. Each section README captures the structure, talking points, and exercise outlines. Full prose, screenshots, and step-by-step content will be filled in by the course authors.
 
 [legacy-app]: https://github.com/geektrainer/legacy-app
-[s00]: ./content/00-prerequisites/README.md
-[s01]: ./content/01-getting-started-with-copilot-cli/README.md
-[s02]: ./content/02-instructions-files/README.md
-[s03]: ./content/03-prompt-engineering-and-iteration/README.md
-[s04]: ./content/04-agent-skills/README.md
-[s05]: ./content/05-custom-agents/README.md
-[s06]: ./content/06-managing-agents-and-mcp/README.md
-[s07]: ./content/07-real-world-workflow/README.md
-[s08]: ./content/08-wrap-up/README.md
+[s00]: ./content/00-prerequisites.md
+[s01]: ./content/01-getting-started-with-copilot-cli.md
+[s02]: ./content/02-instructions-files.md
+[s03]: ./content/03-prompt-engineering-and-iteration.md
+[s04]: ./content/04-agent-skills.md
+[s05]: ./content/05-custom-agents.md
+[s06]: ./content/06-managing-agents-and-mcp.md
+[s07]: ./content/07-real-world-workflow.md
+[s08]: ./content/08-wrap-up.md

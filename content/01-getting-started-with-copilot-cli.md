@@ -87,10 +87,10 @@ Next, you'll codify what you learned about the codebase as **instructions files*
 | [← Previous: Prerequisites and environment setup][previous-lesson] | [Next: Instructions files →][next-lesson] |
 |:--|--:|
 
-[previous-lesson]: ../00-prerequisites/README.md
-[next-lesson]: ../02-instructions-files/README.md
-[s00]: ../00-prerequisites/README.md
-[s06]: ../06-managing-agents-and-mcp/README.md
+[previous-lesson]: ./00-prerequisites.md
+[next-lesson]: ./02-instructions-files.md
+[s00]: ./00-prerequisites.md
+[s06]: ./06-managing-agents-and-mcp.md
 [copilot-cli-docs]: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli
 [copilot-cli-commands]: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli
 [copilot-terminal]: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli

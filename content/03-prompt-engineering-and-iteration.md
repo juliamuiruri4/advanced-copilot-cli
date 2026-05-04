@@ -88,9 +88,9 @@ Next, you'll move from one-off prompts to **reusable skills** in [Section 4][nex
 | [← Previous: Instructions files][previous-lesson] | [Next: Agent skills →][next-lesson] |
 |:--|--:|
 
-[previous-lesson]: ../02-instructions-files/README.md
-[next-lesson]: ../04-agent-skills/README.md
-[s02]: ../02-instructions-files/README.md
+[previous-lesson]: ./02-instructions-files.md
+[next-lesson]: ./04-agent-skills.md
+[s02]: ./02-instructions-files.md
 [copilot-cli-docs]: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli
 [copilot-cli-commands]: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli
 [copilot-prompting]: https://docs.github.com/en/copilot/get-started/best-practices

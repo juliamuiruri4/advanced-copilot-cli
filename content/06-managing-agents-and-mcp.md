@@ -92,8 +92,8 @@ Next, you'll combine everything — instructions, skills, agents, and MCP — in
 | [← Previous: Custom agents][previous-lesson] | [Next: Real-world workflow →][next-lesson] |
 |:--|--:|
 
-[previous-lesson]: ../05-custom-agents/README.md
-[next-lesson]: ../07-real-world-workflow/README.md
+[previous-lesson]: ./05-custom-agents.md
+[next-lesson]: ./07-real-world-workflow.md
 [copilot-cli-docs]: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli
 [mcp-intro]: https://modelcontextprotocol.io/introduction
 [github-mcp-server]: https://github.com/github/github-mcp-server

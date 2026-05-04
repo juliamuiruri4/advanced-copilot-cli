@@ -61,7 +61,7 @@ Talking points:
 | [← Previous: Real-world workflow][previous-lesson] |  |
 |:--|--:|
 
-[previous-lesson]: ../07-real-world-workflow/README.md
+[previous-lesson]: ./07-real-world-workflow.md
 [copilot-cli-docs]: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli
 [copilot-best-practices]: https://docs.github.com/en/copilot/get-started/best-practices
 [mcp-intro]: https://modelcontextprotocol.io/introduction

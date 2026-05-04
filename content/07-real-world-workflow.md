@@ -106,9 +106,9 @@ Next, take stock of what you built and where to go next in [Section 8][next-less
 | [← Previous: Managing agents and MCP][previous-lesson] | [Next: Wrap-up →][next-lesson] |
 |:--|--:|
 
-[previous-lesson]: ../06-managing-agents-and-mcp/README.md
-[next-lesson]: ../08-wrap-up/README.md
-[s06]: ../06-managing-agents-and-mcp/README.md
+[previous-lesson]: ./06-managing-agents-and-mcp.md
+[next-lesson]: ./08-wrap-up.md
+[s06]: ./06-managing-agents-and-mcp.md
 [copilot-cli-docs]: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli
 [github-prs]: https://docs.github.com/en/pull-requests
 [github-mcp-server]: https://github.com/github/github-mcp-server

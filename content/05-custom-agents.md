@@ -93,11 +93,11 @@ Next you'll bring **MCP** into the picture — both the built-in GitHub MCP tool
 | [← Previous: Agent skills][previous-lesson] | [Next: Managing agents and MCP →][next-lesson] |
 |:--|--:|
 
-[previous-lesson]: ../04-agent-skills/README.md
-[next-lesson]: ../06-managing-agents-and-mcp/README.md
-[s02]: ../02-instructions-files/README.md
-[s04]: ../04-agent-skills/README.md
-[s07]: ../07-real-world-workflow/README.md
+[previous-lesson]: ./04-agent-skills.md
+[next-lesson]: ./06-managing-agents-and-mcp.md
+[s02]: ./02-instructions-files.md
+[s04]: ./04-agent-skills.md
+[s07]: ./07-real-world-workflow.md
 [copilot-cli-docs]: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli
 [copilot-custom-agents]: https://docs.github.com/en/copilot
 [spring-boot-3-migration]: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide
