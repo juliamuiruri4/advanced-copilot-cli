@@ -41,7 +41,7 @@ Let's briefly walk through each of these.
 > [!IMPORTANT]
 > The flow highlighted above provides an overview of the approach Copilot will typically take. Internally, it may iterate between multiple steps as it works on providing the solution for the provided prompt. For example, it may generate an initial response, discover it doesn't meet the needs, and return back to analyzing context to improve its response.
 
-### Understand the prompt
+### 1. Understand the prompt
 
 The prompt you send to Copilot is certainly the most obvious part of the flow with Copilot CLI. It's what you type into the dialog box, and what devs typically focus on when first working with an AI assistant. A good prompt should contain:
 
@@ -58,7 +58,7 @@ Add a filter to the assets list page. Operators should be able to filter by cate
 > [!NOTE]
 > Large language models (LLMs) process and generate text as tokens. In the prompt above, it's very likely every word would be a single token as they're all relatively common in English and development. The one exception to this is *availability*, which might be broken down into its root *available* and the suffix *ility*. This type of breakdown allows for better understanding of the word and its meaning in context with the rest of the prompt. By and large you don't need to consider tokenization of prompts, responses, or other text considered by Copilot, but it can be helpful to better understand how Copilot is working on your request.
 
-### Analyze the context
+### 2. Analyze the context
 
 Context is key throughout much of life, and when working with AI. While the more robust prompt in the section above provides a lot of direction to Copilot, there's still quite a bit that needs to be understood to ensure the response generated genuinely meets the needs of the project. Some questions that need to be answered include:
 
@@ -72,7 +72,7 @@ We always need to ensure Copilot is able to find the correct answers to these qu
 
 This is where your AI infrastructure - your instructions files, agent skills, custom agents and MCP servers - helps guide Copilot by providing curated context it can use when generating responses. Between your prompt, your code, and your project's AI infrastructure, Copilot will have the understanding of how to work in your environment. You'll build out that infrastructure starting in [Section 2][next-lesson].
 
-### Determine the user's intent
+### 3. Determine the user's intent
 
 You'll notice that determining the intent of your prompt is the third step in this flow. This might feel a bit curious. After all, shouldn't this be the first thing Copilot does? But as highlighted previously, even our relatively detailed prompt instructing Copilot of what to build and how to build it left a fair amount of ambiguity. Only after examining the prompt and the context is Copilot able to build out an effective plan for fulfilling the request.
 
@@ -81,18 +81,18 @@ At this point, Copilot may ask follow-up questions depending on its level of cer
 > [!NOTE]
 > Copilot will often automatically create a plan when approaching a task. If you wish to formalize this step, and iterate on the plan before asking Copilot to begin building the solution, you can use [`/plan` mode][plan-mode].
 
-### Generate a response
+### 4. Generate a response
 
 It's now time for Copilot to begin generating a response! This could include creating code or determining a particular task should be run, like calling a skill or running tests. This could be considered the draft version of the response Copilot generates, as there's still one more step before it actually performs any actions.
 
-### Apply filters
+### 5. Apply filters
 
 Built into Copilot are various filters, including responsible AI usage, a [light security filter][security-filter], and, if enabled, [filtering code that matches publicly available code][public-code-filter]. This ensures responsible use of Copilot, and further improves the quality of code.
 
 > [!NOTE]
 > The security filter built into GitHub Copilot is not built as a replacement for proper security reviews, including human and automated tool reviews.
 
-### Send response to the user
+### 6. Send response to the user
 
 Now it's time for Copilot to do its work! After running through all of the above, Copilot begins generating the necessary code and performing the required tasks. During this process it will determine if any changes to the content or its approach need to be made, potentially returning to earlier steps in the flow.
 
@@ -183,10 +183,10 @@ As you likely expected, there's quite a bit going on behind the scenes with Copi
     ```
 
 12. Note that again Copilot didn't ask permissions. This is because the read-only MCP server is automatically built into Copilot CLI. Also note the call to **MCP:github-mcp-server** took place automatically, as Copilot determined it was the correct tool to call.
-13. Send the following prompt to create issues based on the todos in the README file:
+13. Send the following prompt to create issues based on identified gaps:
 
     ```
-    Can you create a set of short issues based on the todos you see in the readme?
+    Can you create a set of short issues based on the items you see in the exercises?
     ```
 
     Because you are now requesting Copilot make changes to your repository in the form of creating issues, it now asks for permissions. Also note the heading for the dialog, which says **Permission request (2 remaining)**.
