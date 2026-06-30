@@ -194,6 +194,9 @@ The goal here is to have:
 
     Paste the following into the file:
 
+    <details>
+    <summary>test-router.sh script</summary>
+
     ```bash
     #!/usr/bin/env bash
     # Do NOT use set -e; test failures must still emit JSON for the harness.
@@ -283,6 +286,8 @@ The goal here is to have:
       agent_stop
     fi
     ```
+
+    </details>
 
 4. Make the script executable:
 
