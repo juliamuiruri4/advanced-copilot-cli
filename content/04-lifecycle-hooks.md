@@ -43,7 +43,7 @@ Each hook entry declares a `type` field which can either be:
 - `http` - POSTs the event payload as JSON to a URL. Useful for audit trails, webhook-triggered CI or external governance systems without a local script. HTTPS is required by default, but you can allow HTTP for localhost by setting `COPILOT_HOOK_ALLOW_LOCALHOST=1`.
 - `prompt` - auto-submits a text string or slash command into the session on `sessionStart`. Only fires on new interactive sessions (not on resume or in non-interactive `-p` mode).
 
-### How hooks receive events and return output
+## How hooks receive events and return output
 
 The harness emits named events across the session lifecycle and your hook configuration maps event names to arrays of hook entries.
 
@@ -64,6 +64,8 @@ For the test-and-lint feedback loop in this module, the events that matter most 
 
 - `postToolUse` - to run checks after each file edit and feed results back to the agent loop
 - `agentStop` - to optionally block the agent from finishing a turn if checks are red).
+
+### Reading hook input and writing hook output
 
 Every hook entry of type `command` receives the full event payload as **JSON on stdin**. Your script reads it with `INPUT=$(cat)` and extracts fields with `jq`. The exact schema is event-specific, but all payloads share the common fields `sessionId`, `timestamp` and `cwd`.
 
@@ -105,6 +107,8 @@ For `agentStop`, the output schema is different:
 ```
 
 A `"block"` decision tells the harness to open another agent turn automatically, with `reason` as the injected prompt. This is how you will implement *"if tests are red, the agent must address them before it can stop."*
+
+### Exit codes and fail-open vs. fail-closed
 
 Exit codes are how a command hook communicates its own health back to the harness, separate from the JSON it writes to stdout. Every command hook produces an exit code, and the harness uses it to decide whether to treat the hook as successful, warn or fail, before it ever looks at the hook's output.
 
@@ -162,9 +166,9 @@ Every hook file must declare `"version": 1` at the top level:
 > [!NOTE]
 > When running Copilot CLI in non-interactive prompt mode, repository hooks are **disabled by default**. Enable them with `GITHUB_COPILOT_PROMPT_MODE_REPO_HOOKS=true` if you need hooks to fire in CI or scripted runs.
 
-## Exercise: Wire up after-edit hooks for AssetTrack
+## Exercise 1: Wire up `after-edit` hooks for AssetTrack
 
-The goal here is to have:
+AssetTrack's checks span four different stacks - .NET, Java, Python, TypeScript, so "run the tests" means a different command depending on which file the agent just touched and that's an easy step to forget mid-session. That's exactly the kind of deterministic, no-judgment-required work you read about above, so instead of relying on the model to remember, you'll build:
 
 - a `postToolUse` hook that:
   - inspects which file was just edited, 
@@ -172,8 +176,6 @@ The goal here is to have:
   - feeds the output back as `additionalContext` so the next agent turn begins with the actual test result. 
   
 - A second hook - `agentStop`, that blocks the agent from finishing a turn if any stack's checks are red.
-
-### Create the hook script
 
 1. Return to your codespace and open a terminal.
 
@@ -183,104 +185,12 @@ The goal here is to have:
     mkdir -p .github/hooks/scripts
     ```
 
-3. Create `.github/hooks/scripts/test-router.sh`, which reads the edited file path from the `postToolUse` payload, runs the right test runner for that stack, and emits the result as `additionalContext`. The same script also handles `agentStop` by looking at changed files and blocking only when the relevant stack's tests fail.
-
-    Paste the following into the file:
-
-    <details>
-    <summary>test-router.sh script</summary>
+3. Download `.github/hooks/scripts/test-router.sh`, which reads the edited file path from the `postToolUse` payload, runs the right test runner for that stack and emits the result as `additionalContext`. The same script also handles `agentStop` by looking at changed files and blocking only when the relevant stack's tests fail:
 
     ```bash
-    #!/usr/bin/env bash
-    # Do NOT use set -e; test failures must still emit JSON for the harness.
-
-    INPUT=$(cat)
-    ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
-
-    changed_files() {
-      { git diff --name-only HEAD 2>/dev/null; git ls-files --others --exclude-standard 2>/dev/null; } | sort -u
-    }
-
-    normalize_path() {
-      local FILE="$1"
-      FILE="${FILE#"$ROOT"/}"
-      FILE="${FILE#"$PWD"/}"
-      FILE="${FILE#./}"
-      printf '%s\n' "$FILE"
-    }
-
-    stack_for_file() {
-      case "$1" in
-        services/assets-svc/*.cs) echo dotnet ;;
-        services/workforce-svc/*.java|services/workforce-svc/pom.xml) echo java ;;
-        services/reporting-svc/*.py|services/reporting-svc/pyproject.toml) echo python ;;
-        services/web/*.astro|services/web/*.ts|services/web/*.tsx|tests/playwright/*.ts|playwright.config.ts|package.json|package-lock.json) echo playwright ;;
-      esac
-    }
-
-    run_stack() {
-      case "$1" in
-        dotnet) NAME=".NET"; COMMAND="dotnet test services/assets-svc/Tests/AssetsService.Tests.csproj" ;;
-        java) NAME="Java"; COMMAND="cd services/workforce-svc && mvn test --no-transfer-progress" ;;
-        python) NAME="Python"; COMMAND="cd services/reporting-svc && pytest" ;;
-        playwright) NAME="Web / Playwright"; COMMAND="npm run test:e2e" ;;
-        *) return 0 ;;
-      esac
-
-      OUTPUT=$(bash -c "$COMMAND" 2>&1)
-      STATUS=$?
-      TAIL=$(printf '%s\n' "$OUTPUT" | tail -40)
-      printf -v RUN_RESULT 'Stack: %s\nCommand: %s\nExit code: %s\n%s' "$NAME" "$COMMAND" "$STATUS" "$TAIL"
-      return "$STATUS"
-    }
-
-    post_tool_use() {
-      FILE=$(printf '%s\n' "$INPUT" | jq -r '.toolArgs.path // .toolArgs.filePath // empty')
-      FILE=$(normalize_path "$FILE")
-      STACK=$(stack_for_file "$FILE")
-      [[ -z "$FILE" || -z "$STACK" ]] && echo '{}' && exit 0
-
-      if run_stack "$STACK"; then
-        STATUS_TEXT="passed"
-      else
-        STATUS_TEXT="failed"
-      fi
-
-      printf -v CTX 'Hook check for %s %s.\n%s' "$FILE" "$STATUS_TEXT" "$RUN_RESULT"
-      jq -n --arg ctx "$CTX" '{"additionalContext": $ctx}'
-    }
-
-    agent_stop() {
-      STACKS=""
-      while IFS= read -r FILE; do
-        STACK=$(stack_for_file "$FILE")
-        [[ -n "$STACK" && " $STACKS " != *" $STACK "* ]] && STACKS="$STACKS $STACK"
-      done < <(changed_files)
-
-      [[ -z "$STACKS" ]] && echo '{"decision":"allow"}' && exit 0
-
-      FAILURES=""
-      for STACK in $STACKS; do
-        if ! run_stack "$STACK"; then
-          FAILURES="$FAILURES"$'\n\n'"$RUN_RESULT"
-        fi
-      done
-
-      if [[ -n "$FAILURES" ]]; then
-        jq -n --arg reason "Tests are failing. Fix the failure before finishing this turn:$FAILURES" '{"decision":"block","reason":$reason}'
-      else
-        echo '{"decision":"allow"}'
-      fi
-    }
-
-    if printf '%s\n' "$INPUT" | jq -e 'has("toolArgs")' >/dev/null 2>&1; then
-      post_tool_use
-    else
-      agent_stop
-    fi
+    curl -o .github/hooks/scripts/test-router.sh \
+      https://raw.githubusercontent.com/GeekTrainer/advanced-copilot-cli/main/assets/04/.github/hooks/scripts/test-router.sh
     ```
-
-    </details>
 
 4. Make the script executable:
 
@@ -288,9 +198,7 @@ The goal here is to have:
     chmod +x .github/hooks/scripts/test-router.sh
     ```
 
-### Create the hook configuration file
-
-5. Create `.github/hooks/hooks.json`:
+5. Create the hook configutation file `.github/hooks/hooks.json` and paste in the following content. This declares the `postToolUse` and `agentStop` hooks, both of which call the same script you just downloaded:
 
     ```json
     {
@@ -315,9 +223,9 @@ The goal here is to have:
     }
     ```
 
-### Verify the hooks load
+## Exercise 2: Verify the hooks load
 
-6. Restart Copilot CLI to pick up the new configuration, then load the environment customizations with: 
+1. Restart Copilot CLI to pick up the new configuration, then load the environment customizations with: 
 
     ```text
     /env
@@ -325,7 +233,7 @@ The goal here is to have:
 
     You should see your `postToolUse` and `agentStop` entries listed under Hooks.
 
-7. Test the hook script in isolation before relying on it in a session. From the repository root, pipe a synthetic payload and confirm the output is valid JSON:
+2. Test the hook script in isolation before relying on it in a session. From the repository root, pipe a synthetic payload and confirm the output is valid JSON:
 
     ```bash
     echo "{\"toolName\":\"edit\",\"toolArgs\":{\"path\":\"$PWD/services/reporting-svc/app/main.py\",\"old_str\":\"\",\"new_str\":\"\"},\"toolResult\":{\"resultType\":\"success\",\"textResultForLlm\":\"edited\"}}" \
@@ -342,7 +250,7 @@ The goal here is to have:
 
     The `additionalContext` value is what matters: it contains the command exit code, and last 40 lines of test output. That output is exactly what the harness appends to the tool result before the model reads it on its next turn.
 
-8. Test the `agentStop` path before making any stack changes. The hook files themselves do not map to a test stack, so it should allow the turn to finish:
+3. Test the `agentStop` path before making any stack changes. The hook files themselves do not map to a test stack, so it should allow the turn to finish:
 
     ```bash
     echo '{}' | .github/hooks/scripts/test-router.sh | jq .
@@ -356,14 +264,14 @@ The goal here is to have:
     }
     ```
 
-9. The hook infrastructure is ready. Commit the hook config and script on this branch. 
+4. The hook infrastructure is ready. Commit the hook config and script on this branch. 
 
     *Create a new branch called add-lifecycle-hooks, commit the `.github/hooks/` directory with a message explaining what the hooks do and why, then push and open a PR.*
 
 > [!NOTE]
 > The PR at this point contains only the hook infrastructure. The code changes in the next exercise are temporary. You will revert them before merging.
 
-## Exercise: Close the feedback loop on a real change
+## Exercise 3: Close the feedback loop on a real change
 
 With hooks wired up, prove the loop end-to-end: a change goes in, the `postToolUse` hook fires and reports results, and if the `agentStop` gate catches a failure, the agent addresses it before finishing the turn.
 
@@ -399,7 +307,7 @@ With hooks wired up, prove the loop end-to-end: a change goes in, the `postToolU
 
     The agent should be able to quote or summarize the test output from the `additionalContext` the hook injected.
 
-4. Now deliberately break the assertion to trigger the `agentStop` gate. Ask Copilot to introduce a broken test:
+4. Now deliberately break the assertion to trigger the `agentStop` gate. Ask Copilot to introduce a broken test, (purely for demonstration purposes):
 
     ```text
     Change the assertion in the test you just added so it asserts the wrong expected value — make it definitely fail.
@@ -441,6 +349,7 @@ Next, you'll put all of the infrastructure to work by adding a real **new featur
 [previous-lesson]: ./03-test-suite-remote-delegation.md
 [next-lesson]: ./05-add-feature-barcode.md
 [m02]: ./02-building-ai-infrastructure.md
+[test-router-script]: https://github.com/GeekTrainer/advanced-copilot-cli/blob/main/assets/04/.github/hooks/scripts/test-router.sh
 [use-hooks]: https://docs.github.com/copilot/how-tos/copilot-cli/customize-copilot/use-hooks
 [hooks-reference]: https://docs.github.com/copilot/reference/hooks-reference
 [awesome-copilot-hooks]: https://awesome-copilot.github.com/learning-hub/automating-with-hooks/
